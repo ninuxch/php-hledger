@@ -9,7 +9,10 @@ $hledger_web = 'hledger-web';
 chdir(__DIR__);
 
 if (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
-    $os = 'ubuntu';
+	$os = 'linux-static-x64';
+	$hledger .= '-'.$os;
+	$hledger_ui .= '-'.$os;
+	$ledger_web .= '-'.$os;
 } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
     $os = 'windows';
     $hledger .= '.exe';
@@ -22,7 +25,7 @@ if (strtoupper(substr(PHP_OS, 0, 5)) === 'LINUX') {
     exit(1);
 }
 
-$version = '1.21';
+$version = '1.22';
 
 $url = "https://github.com/simonmichael/hledger/releases/download/${version}/hledger-${os}.zip";
 
@@ -49,6 +52,13 @@ if ($result === true) {
 } else {
     echo("Error unzipping hledger");
     exit(1);
+}
+
+if ($os == 'linux-static-x64' && file_exists("$bin/$hledger")) {
+	if (file_exists("$bin/hledger"))
+		unlink("$bin/hledger");
+	if (rename("$bin/$hledger", "$bin/hledger"))
+		$hledger = 'hledger';
 }
 
 if (file_exists("$bin/$hledger_ui"))
